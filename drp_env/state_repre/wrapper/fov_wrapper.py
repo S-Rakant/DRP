@@ -7,8 +7,10 @@ def neighbor_filter_obs(env, state_repre_flag):
 
     agent_num = env.agent_num
     n_act = env.n_actions
-    all_onehot_obs = np.array(env.obs_onehot)
-    onehot_obs = all_onehot_obs[:,:n_act]
+    all_onehot_obs = np.array(env.obs_onehot) #現在地とゴール地点を含めたonehot
+    print(f'all_onehot_obs = {all_onehot_obs}') #all_onehot_obs = [[0.   0.   0.   0.   0.   0.   0.28 0.72 0.   0.   0.   0.   0.   0. 1.   0.   0.   0.  ] [0.   0.   0.   0.   0.8  0.2  0.   0.   0.   0.   0.   1.   0.   0.  0.   0.   0.   0.  ] [0.   0.57 0.   0.   0.43 0.   0.   0.   0.   0.   0.   0.   0.   0.  0.   0.   0.   1.  ]]
+    onehot_obs = all_onehot_obs[:,:n_act] #onehot_obs = [[0.   0.   0.   0.   0.   0.   0.28 0.72 0.  ] [0.   0.   0.   0.   0.8  0.2  0.   0.   0.  ] [0.   0.57 0.   0.   0.43 0.   0.   0.   0.  ]]
+    print(f'onehot_obs = {onehot_obs}')
     G = env.ee_env.G
 
     state = [0] * n_act
@@ -26,8 +28,8 @@ def neighbor_filter_obs(env, state_repre_flag):
             pos = {"type": "e", "pos": edge, "current_goal": env.current_goal[i], "current_start": env.current_start[i], "obs": obs_i}
         state += obs_i
         pos_list.append(pos)
-    # print("state", state)
-    # print("pos_list", pos_list)
+    print("state", state)
+    print("pos_list", pos_list)
 
     neighbor_filter = calc_neighbor_filter(pos_list, G, state, n_act, agent_num)
 

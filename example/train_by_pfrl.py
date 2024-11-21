@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 
 drone_num = 3
-map_name = "map_aoba01"
+map_name = "map_3x3"
 reward_list = {
     "goal": 100,
     "collision": -10,
@@ -21,9 +21,14 @@ reward_list = {
     "move": -1,
 }
 
+"""
+small_fov: state_repre_flag = ad_dim_onehot_small_fov 
+medium_fov: state_repre_flag = ad_dim_onehot_medium_fov
+large_fov: state_repre_flag = ad_dim_onehot_large_fov
+"""
 env = gym.make(
     "drp_env:drp-" + str(drone_num) + "agent_" + map_name + "-v2",
-    state_repre_flag="onehot_fov",
+    state_repre_flag="ad_dim_onehot_large_fov",
     reward_list=reward_list,
 )
 
@@ -45,7 +50,7 @@ class QFunction(torch.nn.Module):
 
 # The OBS space in the Aoba map consists of 18 BoxSpaces, each with [0,100]×[0,100]
 
-obs_size = env.observation_space[0].shape[0] # map_aoba01 has 18 nodes, current-position(18dimensions)+current-goal(18dimensions)=36
+obs_size = env.observation_space[0].shape[0]# map_aoba01 has 18 nodes, current-position(18dimensions)+current-goal(18dimensions)=36
 n_actions = env.action_space[0].n # map_aoba01 has 18 nodes and each node corresponds to one action
 q_func = QFunction(obs_size, n_actions)
 print(f"obs_size:{env.observation_space[0].shape[0]}")
@@ -78,7 +83,7 @@ agent_array = [pfrl.agents.DQN(
 episodes = 10
 reward_array,average_rewards=[],[]
 for i in range(1, episodes + 1):
-    obs = env.reset()
+    obs = env.reset() #reset(), step()で返されるobsはどちらもobs = self.obs_manager.calc_obs()で処理される.(state_repreに新しい名前を追加して新規のwrapperを作成)
     reward = 0  # return (sum of rewards)
     t = 0  # time step
     done = False
@@ -88,7 +93,7 @@ for i in range(1, episodes + 1):
         for age in range(env.n_agents):
             action = agent_array[age].act(obs[age])
             actions.append(action)
-        obs, r, done, info= env.step(actions) 
+        obs, r, done, info= env.step(actions)
         print(f"obs:{obs},actions:{actions},r:{r},done:{done},info:{info}")              
         done = all(done)
         reward += sum(r)

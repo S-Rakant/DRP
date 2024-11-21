@@ -24,10 +24,10 @@ class QFunction(torch.nn.Module):
         return pfrl.action_value.DiscreteActionValue(h)
 
 def policy(obs, env): 
-    obs_size = env.observation_space[0].shape[0] # map_aoba01 has 18 nodes, current-position(18dimensions)+current-goal(18dimensions)=36
+    obs_size = env.observation_space[0].shape[0] * 3 / 2  # map_aoba01 has 18 nodes, current-position(18dimensions)+current-goal(18dimensions)=36
     n_actions = env.action_space[0].n # map_aoba01 has 18 nodes and each node corresponds to one action
     q_func = QFunction(obs_size, n_actions)
-    print(f"obs_size:{env.observation_space[0].shape[0]}")
+    print(f"obs_size:{env.observation_space[0].shape[0] * 3 / 2}")
     print(f"n_actions:{env.action_space[0].n}")
     optimizer = torch.optim.Adam(q_func.parameters(), eps=1e-2)
     # Set the discount factor that discounts future rewards.
